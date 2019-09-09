@@ -37,7 +37,7 @@ RUN sha1sum $ibmtpm_name.tar.gz | grep ^8fe74d8a155fba38e50d029251cd4eaf0c6e199d
   mkdir -p $ibmtpm_name && \
   tar xvf $ibmtpm_name.tar.gz -C $ibmtpm_name && \
   cd $ibmtpm_name/src && \
-  CFLAGS="-I/usr/local/openssl/include" make -j$(nproc) && \
+  make -j$(nproc) && \
   cp tpm_server /usr/local/bin
 
 # install TSS itself
