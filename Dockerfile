@@ -72,5 +72,7 @@ RUN cd /tmp && tar xvf 4.0.tar.gz && \
   make -j$(nproc) && \
   make install
 
-# RUN tpm_server &
-# RUN tpm2-abrmd --allow-root --tcti=mssim
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
