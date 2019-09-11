@@ -1,10 +1,19 @@
 FROM alpine
 
-WORKDIR /tpm2
+WORKDIR /pki
+
+COPY strongswan-tpm.packages.tar.gz strongswan-tpm.packages.tar.gz
+COPY asac-5d72164a.rsa.pub /etc/apk/keys/
+
+RUN tar xvf strongswan-tpm.packages.tar.gz && \
+	echo "/pki/packages/main" >> /etc/apk/repositories && \
+	echo "/pki/packages/testing" >> /etc/apk/repositories && \
+	echo "/pki/packages/community" >> /etc/apk/repositories
 
 RUN apk update \
 	&& apk add git \
 		build-base \
+		strongswan \
 		libtool \
 		binutils \
 		grep \
@@ -72,5 +81,7 @@ RUN git clone https://github.com/tpm2-software/tpm2-tools.git /tmp/tpm2-tools &&
 
 COPY docker-entrypoint.alpine.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
+
+WORKDIR /tpm2
 
 ENTRYPOINT ["docker-entrypoint.sh"]
