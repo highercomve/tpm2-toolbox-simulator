@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-dbus-daemon --system
+/etc/init.d/dbus start
 tpm_server &
-tpm2-abrmd --allow-root --tcti=mssim
+sleep 1
+tpm2-abrmd --allow-root --tcti=mssim &
 
 exec "$@"
