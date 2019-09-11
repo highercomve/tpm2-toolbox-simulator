@@ -52,7 +52,7 @@ RUN git clone https://github.com/tpm2-software/tpm2-tss.git /tmp/tpm2-tss && \
 	cd /tmp/tpm2-tss && \
   ./bootstrap && \
 	./configure --enable-unit && \
-	make check && \
+	make -j$(nproc) check && \
 	make install && \
 	ldconfig
 
@@ -62,7 +62,7 @@ RUN git clone https://github.com/tpm2-software/tpm2-abrmd.git /tmp/tpm2-abrmd &&
   cd /tmp/tpm2-abrmd && \
   ./bootstrap && \
   ./configure --enable-unit --with-dbuspolicydir=/etc/dbus-1/system.d && \
-  dbus-launch make check && \
+  dbus-launch make -j$(nproc) check && \
   make install && \
 	ldconfig
 
@@ -71,7 +71,7 @@ RUN git clone https://github.com/tpm2-software/tpm2-tools.git /tmp/tpm2-tools &&
 	cd /tmp/tpm2-tools && \
 	./bootstrap && \
 	./configure && \
-	make check && \
+	make -j$(nproc) check && \
 	make install
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
