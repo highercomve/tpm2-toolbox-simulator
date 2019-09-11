@@ -9,6 +9,7 @@ RUN	apt-get install -y git \
 	autoconf-archive \
 	automake \
 	build-essential \
+	strongswan-pki \
 	g++ \
 	gcc \
 	git \
