@@ -21,7 +21,7 @@ tpm2_createek -c ek.handle -G rsa -f pem -u ek.pub.pem
 pki --gen --type ecdsa --size 256 --outform pem > demoCaKey.pem
 pki --self --ca --type ecdsa --in demoCaKey.pem --dn="C=US, O=Demo, CN=Demo ACA" --lifetime 3652 --outform pem > demoCaCert.pem
 openssl x509 -in demoCaCert.pem -inform pem -outform der -out demoCaCert.der
-tpm2_nvdefine -Q 2 -C p -a "ownerread|policywrite|ownerwrite|platformcreate|no_da"
+tpm2_nvdefine -Q 2 -C p -a "ownerread|policywrite|ownerwrite|platformcreate|no_da|policyread|authread"
 tpm2_nvwrite -Q 2 -C o -i demoCaCert.der
 ```
 
