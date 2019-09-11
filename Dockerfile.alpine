@@ -1,0 +1,76 @@
+FROM alpine
+
+WORKDIR /tpm2
+
+RUN apk update \
+	&& apk add git \
+		build-base \
+		libtool \
+		binutils \
+		grep \
+		findutils \
+		coreutils \
+		bash \
+		cmocka-dev \
+		procps-dev \
+		procps \
+		iproute2 \
+		bash \
+		pkgconf \
+		automake \
+		openssl-dev \
+		uthash-dev \
+		autoconf \
+		doxygen \
+		libltdl \
+		linux-headers \
+		curl-dev \
+		autoconf-archive \
+    openssl \
+    glib-dev \
+    dbus-x11 \
+	&& rm -rf /var/cache/apk/*
+ 
+RUN adduser -S tss
+
+# Install simulator
+ARG ibmtpm_name=ibmtpm1332
+ADD "https://downloads.sourceforge.net/project/ibmswtpm2/$ibmtpm_name.tar.gz" .
+RUN sha1sum $ibmtpm_name.tar.gz | grep ^8fe74d8a155fba38e50d029251cd4eaf0c6e199d && \
+  mkdir -p $ibmtpm_name && \
+  tar xvf $ibmtpm_name.tar.gz -C $ibmtpm_name && \
+  cd $ibmtpm_name/src && \
+  make -j$(nproc) && \
+  cp tpm_server /usr/local/bin
+
+# install TSS itself
+RUN git clone https://github.com/tpm2-software/tpm2-tss.git /tmp/tpm2-tss && \
+	cd /tmp/tpm2-tss && \
+  ./bootstrap && \
+	./configure --prefix=/usr && \
+	make -j$(nproc) check && \
+	make install && \
+	ldconfig /usr/lib /usr/glibc/usr/lib
+
+# Install abrmd itself
+ENV LD_LIBRARY_PATH /usr/lib
+RUN git clone https://github.com/tpm2-software/tpm2-abrmd.git /tmp/tpm2-abrmd && \
+  cd /tmp/tpm2-abrmd && \
+  ./bootstrap && \
+  ./configure --prefix=/usr --with-dbuspolicydir=/usr/share/dbus-1/system.d && \
+  dbus-launch make -j$(nproc) check && \
+  make install && \
+	ldconfig /usr/lib /usr/glibc/usr/lib
+
+# Install tools itself
+RUN git clone https://github.com/tpm2-software/tpm2-tools.git /tmp/tpm2-tools && \
+	cd /tmp/tpm2-tools && \
+	./bootstrap && \
+	./configure --prefix=/usr && \
+	make -j$(nproc) check && \
+	make install
+
+COPY docker-entrypoint.alpine.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
