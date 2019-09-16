@@ -72,8 +72,11 @@ RUN git clone https://github.com/tpm2-software/tpm2-abrmd.git /tmp/tpm2-abrmd &&
 	ldconfig /usr/lib /usr/glibc/usr/lib
 
 # Install tools itself
-RUN git clone https://github.com/tpm2-software/tpm2-tools.git /tmp/tpm2-tools && \
-	cd /tmp/tpm2-tools && \
+
+RUN git clone https://github.com/tpm2-software/tpm2-tools.git /tmp/tpm2-tools
+COPY tpm_tools.patch /tmp/tpm2-tools/tpm_tools.patch
+RUN	cd /tmp/tpm2-tools && \
+	patch -p1 < ./tpm_tools.patch && \
 	./bootstrap && \
 	./configure --prefix=/usr && \
 	make -j$(nproc) check && \

@@ -1,0 +1,52 @@
+diff --git a/tools/tpm2_readpublic.c b/tools/tpm2_readpublic.c
+index 7a2f916a..2572ca18 100644
+--- a/tools/tpm2_readpublic.c
++++ b/tools/tpm2_readpublic.c
+@@ -15,6 +15,7 @@ struct tpm_readpub_ctx {
+         UINT8 f :1;
+     } flags;
+     char *output_path;
++    char *public_path;
+     char *out_name_file;
+     tpm2_convert_pubkey_fmt format;
+     tpm2_loaded_object context_object;
+@@ -58,6 +59,13 @@ static tool_rc read_public_and_save(ESYS_CONTEXT *ectx) {
+         }
+     }
+ 
++    if (ctx.public_path)
++        ret = files_save_public(public, ctx.public_path);
++    if (!ret) {
++        LOG_ERR("Can not save public file.");
++        goto out;
++    }
++
+     tpm2_tool_output("qualified name: ");
+     for (i = 0; i < qualified_name->size; i++) {
+         tpm2_tool_output("%02x", qualified_name->name[i]);
+@@ -97,6 +105,9 @@ static bool on_option(char key, char *value) {
+     case 'o':
+         ctx.output_path = value;
+         break;
++    case 'p':
++        ctx.public_path = value;
++        break;
+     case 'f':
+         ctx.format = tpm2_convert_pubkey_fmt_from_optarg(value);
+         if (ctx.format == pubkey_format_err) {
+@@ -119,13 +130,14 @@ bool tpm2_tool_onstart(tpm2_options **opts) {
+ 
+     static const struct option topts[] = {
+         { "output",            required_argument, NULL, 'o' },
++        { "public",            required_argument, NULL, 'p' },
+         { "object-context",    required_argument, NULL, 'c' },
+         { "format",            required_argument, NULL, 'f' },
+         { "name",              required_argument, NULL, 'n' },
+         { "serialized-handle", required_argument, NULL, 't' }
+     };
+ 
+-    *opts = tpm2_options_new("o:c:f:n:t:", ARRAY_LEN(topts), topts, on_option,
++    *opts = tpm2_options_new("o:p:c:f:n:t:", ARRAY_LEN(topts), topts, on_option,
+             NULL, 0);
+ 
+     return *opts != NULL;
