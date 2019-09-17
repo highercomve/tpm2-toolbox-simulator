@@ -38,6 +38,7 @@ RUN apk update \
     openssl \
     glib-dev \
     dbus-x11 \
+		curl \
 	&& rm -rf /var/cache/apk/*
  
 RUN adduser -S tss
