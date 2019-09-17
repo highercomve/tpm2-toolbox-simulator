@@ -13,6 +13,7 @@ RUN tar xvf strongswan-tpm.packages.tar.gz && \
 RUN apk update \
 	&& apk add git \
 		build-base \
+		jq \
 		strongswan \
 		libtool \
 		binutils \
