@@ -122,7 +122,10 @@ COPY ./services/tpm2-abrmd /etc/init.d/
 # enable default services
 RUN rc-update add dbus default \
     && rc-update add tpm_server default \
-    && rc-update add tpm2-abrmd default
+    && rc-update add tpm2-abrmd default \
+		&& touch /tpm2/NVChip \
+		&& chmod 644 /tpm2/NVChip \
+		&& ln -s /tpm2/NVChip /NVChip
 
 CMD ["/sbin/init"]
 ENTRYPOINT ["docker-entrypoint.sh"]
