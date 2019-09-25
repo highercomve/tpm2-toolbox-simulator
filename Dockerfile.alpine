@@ -116,12 +116,12 @@ RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
 
 WORKDIR /tpm2
 
-RUN dbus-daemon --system
 COPY ./services/tpm_server /etc/init.d/
 COPY ./services/tpm2-abrmd /etc/init.d/
 
 # enable default services
-RUN rc-update add tpm_server default \
+RUN rc-update add dbus default \
+    && rc-update add tpm_server default \
     && rc-update add tpm2-abrmd default
 
 CMD ["/sbin/init"]
