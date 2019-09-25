@@ -125,3 +125,4 @@ RUN rc-update add tpm_server default \
     && rc-update add tpm2-abrmd default
 
 CMD ["/sbin/init"]
+ENTRYPOINT ["docker-entrypoint.sh"]
