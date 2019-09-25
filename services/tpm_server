@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+name="tpm_server"
+description="tpm_server"
+
+command="/usr/local/bin/tpm_server"
+command_args=""
+command_background="true"
+pidfile="/run/tpm_server.sock"
+
+depend() {
+    need dbus
+    before tpm2-abrmd
+}

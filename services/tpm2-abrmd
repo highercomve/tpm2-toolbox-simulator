@@ -1,0 +1,17 @@
+#!/sbin/openrc-run
+
+name="tpm2-abrmd"
+description="tpm2-abrmd"
+
+command="/usr/sbin/tpm2-abrmd"
+command_args="--allow-root --tcti=mssim"
+command_background="true"
+pidfile="/run/tpm2-abrmd.sock"
+
+start_pre() {
+   wait4ports tcp://localhost:2321 tcp://localhost:2322
+}
+
+depend() {
+    need tpm_server
+}
