@@ -1,5 +1,7 @@
 FROM ubuntu as builder
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /tpm2
 
 RUN apt-get update
@@ -33,7 +35,8 @@ RUN	apt-get install -y git \
 	uthash-dev \
 	libcurl4-gnutls-dev \
 	doxygen \
-	python-minimal
+	python2-minimal \
+	libjson-c-dev
  
 RUN useradd --system --user-group tss
 
