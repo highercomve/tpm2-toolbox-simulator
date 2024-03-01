@@ -1,5 +1,7 @@
 FROM ubuntu as builder
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /tpm2
 
 RUN apt-get update
@@ -33,22 +35,24 @@ RUN	apt-get install -y git \
 	uthash-dev \
 	libcurl4-gnutls-dev \
 	doxygen \
-	python-minimal
+	python2-minimal \
+	libjson-c-dev
  
 RUN useradd --system --user-group tss
 
 # Install simulator
-ARG ibmtpm_name=ibmtpm1332
-ADD "https://downloads.sourceforge.net/project/ibmswtpm2/$ibmtpm_name.tar.gz" .
-RUN sha1sum $ibmtpm_name.tar.gz | grep ^8fe74d8a155fba38e50d029251cd4eaf0c6e199d && \
-  mkdir -p $ibmtpm_name && \
-  tar xvf $ibmtpm_name.tar.gz -C $ibmtpm_name && \
-  cd $ibmtpm_name/src && \
+ARG ibmtpm=ibmtpm1682
+ARG ibmtpm_hash=651800d0b87cfad55b004fbdace4e41dce800a61
+ADD "https://downloads.sourceforge.net/project/ibmswtpm2/${ibmtpm}.tar.gz" .
+RUN sha1sum ${ibmtpm}.tar.gz | grep ^${ibmtpm_hash} && \
+  mkdir -p ${ibmtpm} && \
+  tar xvf ${ibmtpm}.tar.gz -C ${ibmtpm} && \
+  cd ${ibmtpm}/src && \
   make -j$(nproc) && \
   cp tpm_server /usr/local/bin
 
 # install TSS itself
-RUN git clone https://github.com/tpm2-software/tpm2-tss.git /tmp/tpm2-tss && \
+RUN git clone https://github.com/lparth/tpm2-tss.git /tmp/tpm2-tss && \
 	cd /tmp/tpm2-tss && \
   ./bootstrap && \
 	./configure --enable-unit && \
@@ -58,7 +62,7 @@ RUN git clone https://github.com/tpm2-software/tpm2-tss.git /tmp/tpm2-tss && \
 
 # Install abrmd itself
 ENV LD_LIBRARY_PATH /usr/lib
-RUN git clone https://github.com/tpm2-software/tpm2-abrmd.git /tmp/tpm2-abrmd && \
+RUN git clone https://github.com/lparth/tpm2-abrmd.git /tmp/tpm2-abrmd && \
   cd /tmp/tpm2-abrmd && \
   ./bootstrap && \
   ./configure --enable-unit --with-dbuspolicydir=/etc/dbus-1/system.d && \
@@ -67,7 +71,7 @@ RUN git clone https://github.com/tpm2-software/tpm2-abrmd.git /tmp/tpm2-abrmd &&
 	ldconfig
 
 # Install tools itself
-RUN git clone https://github.com/tpm2-software/tpm2-tools.git /tmp/tpm2-tools && \
+RUN git clone https://github.com/lparth/tpm2-tools.git /tmp/tpm2-tools && \
 	cd /tmp/tpm2-tools && \
 	./bootstrap && \
 	./configure && \

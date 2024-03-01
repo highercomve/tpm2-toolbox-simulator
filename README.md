@@ -1,3 +1,7 @@
+# Fork note. Only relevant for this fork at github.com/lparth/
+
+This particular repo (https://github.com/lparth/tpm2-toolbox-simulator.git) is a developer test repo that is pinned against tpm2 sources in github.com/lparth and uses up to date swtpm2 releases. While this repo is expected to be backward compatible with the original at https://github.com/highercomve/tpm2-toolbox-simulator.git, please be warned that I may take different routes as to the docker image builds and tools within, in the future.
+
 Docker container with TPM 2.0 toolbox running over TPM SIMULATOR
 ================================================================
 
